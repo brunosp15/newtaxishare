@@ -5,18 +5,17 @@ import java.util.List;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.location.Address;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,15 +25,18 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 public class SearchRoteFragment extends Fragment {
 
 	Context mContext;
 	GoogleMap googleMap;
 	LocationManager mLocationManager;
-
-	@InjectView(R.id.btn_search_search)
-	Button mSearch;
 
 	@InjectView(R.id.edit_origin_search)
 	EditText mOrigin;
@@ -47,7 +49,7 @@ public class SearchRoteFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.search_rote_fragment, container, false);
 		mContext = getActivity();
 		mLocationManager = (LocationManager) mContext.getSystemService(mContext.LOCATION_SERVICE);
-		ButterKnife.inject(getActivity());
+		ButterKnife.inject(this, rootView);
 		try {
 			initilizeMap();
 			MapsInitializer.initialize(mContext);
@@ -108,4 +110,65 @@ public class SearchRoteFragment extends Fragment {
 		return mLatLng;
 	}
 
+	@OnClick(R.id.btn_search_search)
+	public void search() {
+		LatLng myLocation = getMyLocation();
+		ParseGeoPoint originPoint = new ParseGeoPoint(myLocation.latitude, myLocation.longitude);
+		ParseGeoPoint destinyPoint = new ParseGeoPoint(-23.5987627, -46.67654730000004);
+
+		ParseQuery<ParseObject> origimQuery = ParseQuery.getQuery("Rote");
+		origimQuery.whereWithinKilometers("origim", originPoint, 3);
+		origimQuery.findInBackground(new FindCallback<ParseObject>() {
+			@Override
+			public void done(List<ParseObject> roteList, ParseException e) {
+				if (e == null) {
+					for (int i = 0; i < roteList.size(); i++) {
+						ParseObject obj = roteList.get(i);
+						obj.getParseObject("detiny").fetchIfNeededInBackground(new GetCallback<ParseObject>() {
+							public void done(ParseObject destiny, ParseException e) {
+								ParseGeoPoint destinyRecoveredPoint = destiny.getParseGeoPoint("destiny");
+								double distance = destinyRecoveredPoint.distanceInKilometersTo(destinyRecoveredPoint);
+								if (distance <= 5) {
+									
+								}
+							}
+						});
+					}
+				} else {
+					ParseExceptios.showErrorMessage(mContext, e);
+				}
+			}
+		});
+
+		// LatLng myLocation = getMyLocation();
+		// ParseGeoPoint originPoint = new ParseGeoPoint(myLocation.latitude,
+		// myLocation.longitude);
+		// ParseUser user = ParseUser.getCurrentUser();
+		//
+		// ParseObject rote = new ParseObject("Rote");
+		//
+		// rote.put("origim", originPoint);
+		// rote.put("user", user.getUsername());
+		//
+		// ParseGeoPoint destinyPoint = new ParseGeoPoint(-23.5987627,
+		// -46.67654730000004);
+		// ParseObject roteDestiny = new ParseObject("RoteDestiny");
+		// roteDestiny.put("destiny", destinyPoint);
+		//
+		// rote.put("destiny", roteDestiny);
+		//
+		// rote.saveInBackground(new SaveCallback() {
+		//
+		// @Override
+		// public void done(ParseException e) {
+		// if (e == null) {
+		// Toast.makeText(mContext, "salvou", Toast.LENGTH_SHORT).show();
+		// } else {
+		// Toast.makeText(mContext, "erro", Toast.LENGTH_SHORT).show();
+		// Log.d("bruno", e.getMessage());
+		// }
+		// }
+		// });
+
+	}
 }
