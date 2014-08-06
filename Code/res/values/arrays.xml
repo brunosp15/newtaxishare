@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="drawer_options">
+        <item>Buscar Rota</item>
+        <item>Editar Perfil</item>
+        <item>Alterar Senha</item>
+        <item>Minhas Rotas</item>
+        <item>Logout</item>
+    </string-array>
+
+</resources>
