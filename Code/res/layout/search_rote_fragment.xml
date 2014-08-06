@@ -3,11 +3,11 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <fragment
+    <RelativeLayout
         android:id="@+id/map_search"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.google.android.gms.maps.MapFragment" />
+        android:layout_height="wrap_content">
+    </RelativeLayout>
 
     <Button
         android:id="@+id/btn_search_search"

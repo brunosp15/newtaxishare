@@ -1,5 +1,7 @@
 package br.com.tinan.taxishare;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,10 +12,10 @@ import android.widget.TextView;
 
 public class RoteListAdapter extends BaseAdapter {
 
-	String[] mAddresses;
+	ArrayList<Rote> mAddresses;
 	Context mContext;
 
-	public RoteListAdapter(String[] mAddresses, Context mContext) {
+	public RoteListAdapter(ArrayList<Rote> mAddresses, Context mContext) {
 		this.mAddresses = mAddresses;
 		this.mContext = mContext;
 	}
@@ -21,13 +23,13 @@ public class RoteListAdapter extends BaseAdapter {
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
-		return mAddresses.length;
+		return mAddresses.size();
 	}
 
 	@Override
-	public String getItem(int position) {
+	public Rote getItem(int position) {
 		// TODO Auto-generated method stub
-		return mAddresses[position];
+		return mAddresses.get(position);
 	}
 
 	@Override
@@ -44,9 +46,11 @@ public class RoteListAdapter extends BaseAdapter {
 			convertView = mInflater.inflate(R.layout.rote_list_item, null);
 		}
 
-		TextView txtTitle = (TextView) convertView.findViewById(R.id.txt_title_rote_list_item);
+		TextView txtOrigim = (TextView) convertView.findViewById(R.id.txt_origim_rote_list_item);
+		TextView txtDestiny = (TextView) convertView.findViewById(R.id.txt_destiny_rote_list_item);
 
-		txtTitle.setText(mAddresses[position]);
+		txtOrigim.setText(mAddresses.get(position).getOrigimString());
+		txtDestiny.setText(mAddresses.get(position).getDestinyString());
 
 		return convertView;
 	}

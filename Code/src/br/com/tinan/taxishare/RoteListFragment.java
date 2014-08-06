@@ -1,8 +1,11 @@
 package br.com.tinan.taxishare;
 
+import java.util.ArrayList;
+
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +15,8 @@ import butterknife.ButterKnife;
 public class RoteListFragment extends Fragment {
 
 	Context mContext;
-	ListView mRoteList;
-	String[] mAddresses;
+	ListView mRoteListView;
+	ArrayList<Rote> mRoteList;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -21,12 +24,12 @@ public class RoteListFragment extends Fragment {
 		mContext = getActivity();
 		ButterKnife.inject(this, rootView);
 
-		mRoteList = (ListView) rootView.findViewById(R.id.list_rote_list);
+		mRoteListView = (ListView) rootView.findViewById(R.id.list_rote_list);
 
 		Bundle bundle = getArguments();
-		mAddresses = bundle.getStringArray("mAddresses");
-		RoteListAdapter adapter = new RoteListAdapter(mAddresses, mContext);
-		mRoteList.setAdapter(adapter);
+		mRoteList = bundle.getParcelableArrayList("mRoteList");
+		RoteListAdapter adapter = new RoteListAdapter(mRoteList, mContext);
+		mRoteListView.setAdapter(adapter);
 
 		return rootView;
 

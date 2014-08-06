@@ -13,6 +13,7 @@ import android.location.Address;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,7 @@ import com.parse.ParseQuery;
 
 public class SearchRoteFragment extends Fragment {
 
+	private static final String TAG = SearchRoteFragment.class.getSimpleName();
 	Context mContext;
 	GoogleMap googleMap;
 	LocationManager mLocationManager;
@@ -49,7 +51,8 @@ public class SearchRoteFragment extends Fragment {
 	@InjectView(R.id.edit_destiny_search)
 	EditText mDestiny;
 
-	List<Rote> mRoteList;
+	ArrayList<Rote> mRoteList;
+	String[] mAdresses;
 
 	ParseGeoPoint mOrigimPoint;
 	ParseGeoPoint mDestinyPoint;
@@ -59,25 +62,30 @@ public class SearchRoteFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.search_rote_fragment, container, false);
-		mContext = getActivity();
-		mLocationManager = (LocationManager) mContext.getSystemService(mContext.LOCATION_SERVICE);
-		ButterKnife.inject(this, rootView);
-		Parse.initialize(getActivity(), Constants.PARSE_APPLICATION_ID, Constants.PARSE_CLIENT_KEY);
-
-		try {
-			initilizeMap();
-			MapsInitializer.initialize(mContext);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		iniatlizeView(rootView);
 		return rootView;
-
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+	}
+
+	public void iniatlizeView(View view) {
+		mContext = getActivity();
+		mLocationManager = (LocationManager) mContext.getSystemService(mContext.LOCATION_SERVICE);
+		ButterKnife.inject(this, view);
+		Parse.initialize(getActivity(), Constants.PARSE_APPLICATION_ID, Constants.PARSE_CLIENT_KEY);
+		try {
+			initilizeMap();
+			MapsInitializer.initialize(mContext);
+		} catch (Exception e) {
+			Log.d(TAG + " initilizeMap", "Exception " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		mDestiny.setText("rua cervinho 191");
+		mOrigin.setText("rua quata 300");
 	}
 
 	private void initilizeMap() {
@@ -96,7 +104,6 @@ public class SearchRoteFragment extends Fragment {
 				CameraPosition cp = new CameraPosition.Builder().target(getMyLocation()).zoom(11).tilt(34).build();
 
 				googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cp));
-
 			}
 		}
 	}
@@ -124,39 +131,27 @@ public class SearchRoteFragment extends Fragment {
 		return mLatLng;
 	}
 
-	public void search() {
+	public void searchRotes() {
 
 		if (mDestinyPoint != null && mOrigimPoint != null) {
 			mRoteList = new ArrayList<Rote>();
 
 			ParseQuery<ParseObject> query = ParseQuery.getQuery("Rote");
-			query.whereWithinKilometers("destinyPoint", mDestinyPoint, 5);
+			query.whereWithinKilometers("destiny", mDestinyPoint, 5);
 			query.findInBackground(new FindCallback<ParseObject>() {
 
 				@Override
 				public void done(List<ParseObject> roteList, ParseException e) {
 					if (e == null) {
 						for (ParseObject roteItem : roteList) {
-							double origimLat = roteItem.getDouble("origimLat");
-							double origimLng = roteItem.getDouble("origimLng");
-							ParseGeoPoint roteOrigimPoint = new ParseGeoPoint(origimLat, origimLng);
-							double origimDistance = roteOrigimPoint.distanceInKilometersTo(mOrigimPoint);
-							if (origimDistance <= 5) {
-
-								String origimString = getEnderecoConvertido(getSingleAddress(origimLat, origimLng));
-								// String origimString =
-								// getEnderecoConvertido(getSingleAddress(origimLat,
-								// origimLng));
-								Rote rote = new Rote(roteOrigimPoint, roteItem.getParseGeoPoint("destinyPoint"),
-										roteItem.getString("user"), origimString, origimString);
-								mRoteList.add(rote);
-							}
+							checkRotesAndAddToList(roteItem);
 						}
-						Toast.makeText(mContext, "ta aqui", Toast.LENGTH_SHORT).show();
+						goToCorrectPage();
 					} else {
 						ParseExceptios.showErrorMessage(mContext, e);
 					}
 				}
+
 			});
 		} else {
 			Toast.makeText(mContext, "Ta errado isso ai", Toast.LENGTH_SHORT).show();
@@ -182,6 +177,30 @@ public class SearchRoteFragment extends Fragment {
 		// }
 		// }
 		// });
+
+	}
+
+	public void goToCorrectPage() {
+		if (mRoteList.size() > 0) {
+			goToRoteList();
+		} else {
+			goToCreateRote();
+		}
+	}
+
+	public void checkRotesAndAddToList(ParseObject roteItem) {
+		double origimLat = roteItem.getDouble("origimLat");
+		double origimLng = roteItem.getDouble("origimLng");
+		ParseGeoPoint roteOrigimPoint = new ParseGeoPoint(origimLat, origimLng);
+		double origimDistance = roteOrigimPoint.distanceInKilometersTo(mOrigimPoint);
+		if (origimDistance <= 5) {
+			String origimString = getEnderecoConvertido(getSingleAddress(origimLat, origimLng));
+			// String origimString =
+			// getEnderecoConvertido(getSingleAddress(origimLat,
+			// origimLng));
+			Rote rote = new Rote(roteOrigimPoint, roteItem.getParseGeoPoint("destiny"), roteItem.getString("user"), origimString, origimString);
+			mRoteList.add(rote);
+		}
 
 	}
 
@@ -242,7 +261,7 @@ public class SearchRoteFragment extends Fragment {
 		String originString = mOrigin.getText().toString();
 		String destinyString = mDestiny.getText().toString();
 
-		// recebe uma lista de endereços com objetos ADDRESS
+		// recebe uma lista de endereï¿½os com objetos ADDRESS
 		mOrigimList = getListaDeEnderecos(originString);
 		mDestinyList = getListaDeEnderecos(destinyString);
 
@@ -250,7 +269,7 @@ public class SearchRoteFragment extends Fragment {
 		final CharSequence[] origimFormatedList = getListaConvertida(mOrigimList);
 		final CharSequence[] destinyFormatedList = getListaConvertida(mDestinyList);
 
-		// Checa se houve retorno para os dois endereços
+		// Checa se houve retorno para os dois endereï¿½os
 		if (origimFormatedList.length > 0 && destinyFormatedList.length > 0) {
 
 			AlertDialog.Builder popupOrigem = new AlertDialog.Builder(mContext);
@@ -263,21 +282,22 @@ public class SearchRoteFragment extends Fragment {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					Address origimAddress = mOrigimList.get(which);
-
+					mOrigin.setText(origimFormatedList[which]);
 					mOrigimPoint = new ParseGeoPoint(origimAddress.getLatitude(), origimAddress.getLongitude());
 					popupDestino.show();
 				}
 			});
 
-			// Define os itens da lista e coloca ação no click do destino
+			// Define os itens da lista e coloca aï¿½ï¿½o no click do destino
 			popupDestino.setItems(destinyFormatedList, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 
 					// Define o objeto destino de acordo com a escolha na lista
 					Address destinyAddress = mDestinyList.get(which);
+					mDestiny.setText(destinyFormatedList[which]);
 					mDestinyPoint = new ParseGeoPoint(destinyAddress.getLatitude(), destinyAddress.getLongitude());
-					search();
+					searchRotes();
 				}
 			});
 
@@ -285,12 +305,31 @@ public class SearchRoteFragment extends Fragment {
 			popupOrigem.show();
 
 		}
-		// Se um endereço não deu retorno
+		// Se um endereï¿½o nï¿½o deu retorno
 		else {
-			// seta o erro aonde a busca não deu retorno
+			// seta o erro aonde a busca nï¿½o deu retorno
 
 			Toast.makeText(mContext, "Sem resultados", Toast.LENGTH_SHORT).show();
 		}
 
+	}
+
+	public void goToRoteList() {
+		RoteListFragment fragment = new RoteListFragment();
+		Bundle args = new Bundle();
+		args.putParcelableArrayList("mRoteList", mRoteList);
+		Utils.changeFragment(getFragmentManager(), fragment, args);
+	}
+
+	private void goToCreateRote() {
+		CreateRoteFragment fragment = new CreateRoteFragment();
+		Bundle args = new Bundle();
+		args.putDouble("origimLat", mOrigimPoint.getLatitude());
+		args.putDouble("origimLng", mOrigimPoint.getLongitude());
+		args.putDouble("destinyLat", mDestinyPoint.getLatitude());
+		args.putDouble("destinyLng", mDestinyPoint.getLongitude());
+		args.putString("origimAddress", mOrigin.getText().toString());
+		args.putString("destinyAddress", mDestiny.getText().toString());
+		Utils.changeFragment(getFragmentManager(), fragment, args);
 	}
 }
