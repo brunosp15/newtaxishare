@@ -32,6 +32,9 @@ public class LoginActivity extends Activity {
 		Parse.initialize(this, Constants.PARSE_APPLICATION_ID, Constants.PARSE_CLIENT_KEY);
 		mContext = this;
 
+		mLogin.setText("Bruno");
+		mPassword.setText("asdasd");
+
 	}
 
 	@OnClick(R.id.btn_register_login)

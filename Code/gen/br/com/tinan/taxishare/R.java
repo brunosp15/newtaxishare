@@ -1489,11 +1489,11 @@ containing a value of this type.
         public static final int action_bar_subtitle=0x7f080035;
         public static final int action_bar_title=0x7f080034;
         public static final int action_context_bar=0x7f08002f;
-        public static final int action_example=0x7f080064;
+        public static final int action_example=0x7f080066;
         public static final int action_menu_divider=0x7f080028;
         public static final int action_menu_presenter=0x7f080029;
         public static final int action_mode_close_button=0x7f080036;
-        public static final int action_settings=0x7f080063;
+        public static final int action_settings=0x7f080065;
         public static final int activity_chooser_view_content=0x7f080037;
         public static final int always=0x7f08001e;
         public static final int beginning=0x7f080023;
@@ -1503,7 +1503,7 @@ containing a value of this type.
         public static final int btn_reset_login=0x7f080058;
         public static final int btn_reset_reset=0x7f08005e;
         public static final int btn_save_register=0x7f08005c;
-        public static final int btn_search_search=0x7f080060;
+        public static final int btn_search_search=0x7f080062;
         public static final int buyButton=0x7f08000a;
         public static final int buy_now=0x7f08000f;
         public static final int buy_with_google=0x7f08000e;
@@ -1515,10 +1515,10 @@ containing a value of this type.
         public static final int disableHome=0x7f08001b;
         public static final int drawer_layout=0x7f08004e;
         public static final int dropdown=0x7f080022;
-        public static final int edit_destiny_search=0x7f080062;
+        public static final int edit_destiny_search=0x7f080064;
         public static final int edit_email_register=0x7f08005a;
         public static final int edit_email_reset=0x7f08005d;
-        public static final int edit_origin_search=0x7f080061;
+        public static final int edit_origin_search=0x7f080063;
         public static final int edit_password_login=0x7f080055;
         public static final int edit_password_register=0x7f08005b;
         public static final int edit_query=0x7f080042;
@@ -1540,8 +1540,9 @@ containing a value of this type.
         public static final int img_icon_drawer=0x7f080051;
         public static final int listMode=0x7f080014;
         public static final int list_item=0x7f08003b;
+        public static final int list_rote_list=0x7f08005f;
         public static final int list_slidermenu=0x7f080050;
-        public static final int map_search=0x7f08005f;
+        public static final int map_search=0x7f080061;
         public static final int match_parent=0x7f08000c;
         public static final int middle=0x7f080024;
         public static final int monochrome=0x7f080013;
@@ -1578,6 +1579,7 @@ containing a value of this type.
         public static final int title=0x7f08003d;
         public static final int top_action_bar=0x7f080032;
         public static final int txt_title_drawer=0x7f080052;
+        public static final int txt_title_rote_list_item=0x7f080060;
         public static final int up=0x7f080033;
         public static final int useLogo=0x7f080016;
         public static final int withText=0x7f08001f;
@@ -1641,8 +1643,10 @@ containing a value of this type.
         public static final int login_activity_layout=0x7f03001c;
         public static final int register_activity_layout=0x7f03001d;
         public static final int reset_password_activity=0x7f03001e;
-        public static final int search_rote_fragment=0x7f03001f;
-        public static final int support_simple_spinner_dropdown_item=0x7f030020;
+        public static final int rote_list_fragment=0x7f03001f;
+        public static final int rote_list_item=0x7f030020;
+        public static final int search_rote_fragment=0x7f030021;
+        public static final int support_simple_spinner_dropdown_item=0x7f030022;
     }
     public static final class menu {
         public static final int global=0x7f0d0000;
